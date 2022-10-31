@@ -9,7 +9,6 @@ project(Runner CXX)
 find_package(Boost 1.50 COMPONENTS program_options REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
-
 # Read source and header files in src/
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 file(GLOB_RECURSE HEADER_FILES ${CMAKE_SOURCE_DIR}/src/*.hpp)
@@ -29,4 +28,9 @@ set(LIBS
 message("Got libraries:\n" "${LIBS}")
 
 target_link_libraries(${PROJECT_NAME} ${LIBS})
+
+# Specify definitions
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+    RAYTRACER_PATH="${CMAKE_SOURCE_DIR}/../raytracer/")
 
