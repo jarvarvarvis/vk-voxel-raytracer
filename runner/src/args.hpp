@@ -21,13 +21,16 @@ namespace args
     {
     private:
         RaytracerBuildMode build_mode;
+        bool should_build;
 
     public:
         RaytracerArgs(
-            RaytracerBuildMode build_mode
+            RaytracerBuildMode build_mode,
+            bool should_build
         );
 
         RaytracerBuildMode mode();
+        bool build();
     };
 }
 

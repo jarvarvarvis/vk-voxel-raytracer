@@ -37,12 +37,12 @@ std::ostream& args::operator<<(std::ostream& out, const args::RaytracerBuildMode
     return out;
 }
 
-args::RaytracerArgs::RaytracerArgs(args::RaytracerBuildMode build_mode) :
-    build_mode(build_mode)
+args::RaytracerArgs::RaytracerArgs(args::RaytracerBuildMode build_mode, bool should_build) :
+    build_mode(build_mode),
+    should_build(should_build)
 {
 }
 
-args::RaytracerBuildMode args::RaytracerArgs::mode()
-{
-    return this->build_mode;
-}
+args::RaytracerBuildMode args::RaytracerArgs::mode() { return this->build_mode; }
+
+bool args::RaytracerArgs::build() { return this->should_build; }

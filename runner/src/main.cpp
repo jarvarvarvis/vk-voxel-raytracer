@@ -12,7 +12,11 @@ int main(int argc, char *argv[]) {
         return 0;
 
     args::RaytracerArgs args = parsed_args.value();
-    std::cout << "Mode = " << args.mode() << "\n";
+    if (args.build()) {
+        std::cout << "Building raytracer, mode = " << args.mode() << "\n";
+    } else {
+        std::cout << "Running raytracer" << "\n";
+    }
 
     return 0;
 }

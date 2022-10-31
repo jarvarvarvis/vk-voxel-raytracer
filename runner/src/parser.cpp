@@ -9,6 +9,7 @@ parser::ArgumentParser::ArgumentParser() :
     // Add command line options
     auto add = this->allowed_options.add_options();
     add("help", "Produce help message");
+    add("build", "Build the raytracer and then run it");
     add("mode", program_options::value<args::RaytracerBuildMode>(), "Build mode, Debug is the default");
 }
 
@@ -39,7 +40,10 @@ boost::optional<args::RaytracerArgs> parser::ArgumentParser::parse(int argc, cha
         mode = args::RaytracerBuildMode::Debug;
     }
 
+    // Get only-build flag
+    bool build = vmap.count("build");
+
     // Return arguments
-    return args::RaytracerArgs(mode);
+    return args::RaytracerArgs(mode, build);
 }
 
