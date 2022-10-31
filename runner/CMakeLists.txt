@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 23)
 project(Runner CXX)
 
 # Include packages
-find_package(Boost 1.50 COMPONENTS program_options REQUIRED)
+find_package(Boost 1.50 COMPONENTS program_options filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
 # Read source and header files in src/
@@ -32,5 +32,6 @@ target_link_libraries(${PROJECT_NAME} ${LIBS})
 # Specify definitions
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE
-    RAYTRACER_PATH="${CMAKE_SOURCE_DIR}/../raytracer/")
+    RAYTRACER_PATH="${CMAKE_SOURCE_DIR}/../raytracer/"
+    RAYTRACER_EXECUTABLE="VkVoxelRaytracer")
 

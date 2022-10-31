@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
         runner.build(args.mode());
     } else {
         std::cout << "Running raytracer" << "\n";
-        runner.run();
+        runner.run(args.mode());
     }
 
     return 0;
