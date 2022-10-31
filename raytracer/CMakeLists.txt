@@ -8,7 +8,8 @@ project(VkVoxelRaytracer CXX)
 # Include packages
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
-
+find_package(Vulkan REQUIRED)
+include_directories(${Vulkan_INCLUDE_DIRS})
 
 # Debugging flag (for enabling Vulkan validation layers and
 # other debugging options)
@@ -31,7 +32,15 @@ add_executable(${PROJECT_NAME}
 
 
 # Link libraries
-set(${LIBS}
-    ${SDL2_INCLUDE_DIRS})
+set(LIBS
+    Vulkan::Vulkan
+    SDL2::SDL2)
 
-target_link_libraries(${PROJECT_NAME} ${LIBS})
+message("Got libraries:\n" ${LIBS})
+
+target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBS})
+
+# Specify definitions
+target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+    APPLICATION_NAME="${PROJECT_NAME}")
