@@ -20,7 +20,7 @@ This is possible using an Entity Component System.
 
 ## First Goals/Steps
 
-- [ ] Runner
+- [x] Runner
 - [ ] Entity Component System Base
 - [ ] GLFW + Vulkan integration
 - [ ] Vulkan Window

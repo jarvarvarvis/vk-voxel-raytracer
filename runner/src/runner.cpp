@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <boost/process.hpp>
+#include <boost/filesystem/operations.hpp>
 
 namespace bfs = boost::filesystem;
 namespace bp  = boost::process;
@@ -16,7 +17,8 @@ runner::Runner::Runner(std::string raytracer_project_path) :
 void runner::Runner::build(args::RaytracerBuildMode build_mode)
 {
     bfs::path project_path = this->raytracer_project_path;
-    bfs::path build_script_path = project_path / "build.sh";
+
+    std::cout << "Building raytracer in " << project_path << std::endl;
 
     // Set build mode argument
     std::string build_mode_arg;
@@ -27,19 +29,25 @@ void runner::Runner::build(args::RaytracerBuildMode build_mode)
     }
 
     // If it exists, run it
-    if (bfs::exists(build_script_path)) {
-        // Run process and read its stdout to the process_in stream
+    if (bfs::exists(project_path/"build.sh")) {
+        // Save previous path
+        bfs::path prev_path(bfs::current_path());
+       
+        // Run process in project path and read its stdout to the process_in stream
+        bfs::current_path(project_path);
         bp::ipstream process_in;
-        bp::child build_process("/bin/bash", build_script_path, build_mode_arg, bp::std_out > process_in);
+        bp::child build_process("/bin/bash", "build.sh", build_mode_arg, bp::std_out > process_in);
 
         // Read process stdout
         std::string line;
-
         std::cout << "\nBuild script output:" << std::endl;
         while (build_process.running()) {
             std::getline(process_in, line);
             std::cout << line << std::endl;
         }
+
+        // Go back to previous path
+        bfs::current_path(prev_path); 
     } else {
         throw std::runtime_error(
             "The raytracer build script build.sh doesn't exist in the specified project path"
