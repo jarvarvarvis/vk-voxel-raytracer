@@ -32,7 +32,7 @@ This is possible using an Entity Component System.
 
 - [x] Runner
 - [ ] Entity Component System Base
-- [ ] GLFW + Vulkan integration
+- [ ] SDL2 + Vulkan integration
 - [ ] Vulkan Window
 
 These steps are my primary focus for now, more will be added in the future.
