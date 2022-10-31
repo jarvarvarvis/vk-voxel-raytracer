@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 23)
 
 project(Runner CXX)
 
+# Include packages
+find_package(Boost 1.50 COMPONENTS program_options REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
+link_directories(${Boost_LIBRARY_DIR})
+
 
 # Read source and header files in src/
 file(GLOB_RECURSE SOURCE_FILES ${CMAKE_SOURCE_DIR}/src/*.cpp)
@@ -17,4 +22,10 @@ message("Found header files:\n" "${HEADER_FILES}")
 add_executable(${PROJECT_NAME}
     ${HEADER_FILES}
     ${SOURCE_FILES})
+
+# Link libraries
+set(${LIBS}
+    ${Boost_LIBRARIES})
+
+target_link_libraries(${PROJECT_NAME} ${LIBS})
 
