@@ -14,7 +14,8 @@ window::Window::Window(uint32_t width, uint32_t height)
 
 window::Window::~Window()
 {
-
+    // Clean up SDL window
+    SDL_DestroyWindow(this->sdl_window);
 }
 
 VkApplicationInfo window::Window::create_application_info()
