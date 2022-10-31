@@ -1,9 +1,17 @@
 #include <iostream>
 
-#include <boost/program_options.hpp>
+#include "args.hpp"
+#include "parser.hpp"
 
 int main(int argc, char* argv[])
 {
-    std::cout << "Runner" << std::endl; 
+    parser::ArgumentParser args_parser;
+    boost::optional<args::RaytracerArgs> args = args_parser.parse(argc, argv);
+
+    if (args.is_initialized()) {
+        std::cout << "Mode = " << args.value().mode() << "\n";
+    }
+
     return 0;
 }
+

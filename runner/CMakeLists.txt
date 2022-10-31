@@ -7,8 +7,7 @@ project(Runner CXX)
 
 # Include packages
 find_package(Boost 1.50 COMPONENTS program_options REQUIRED)
-include_directories(${Boost_INCLUDE_DIR})
-link_directories(${Boost_LIBRARY_DIR})
+include_directories(${Boost_INCLUDE_DIRS})
 
 
 # Read source and header files in src/
@@ -24,8 +23,10 @@ add_executable(${PROJECT_NAME}
     ${SOURCE_FILES})
 
 # Link libraries
-set(${LIBS}
+set(LIBS
     ${Boost_LIBRARIES})
+
+message("Got libraries:\n" "${LIBS}")
 
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 
