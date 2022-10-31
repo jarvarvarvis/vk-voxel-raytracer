@@ -28,11 +28,15 @@ allocations etc.
 This is possible using an Entity Component System.
 
 
-## First Goals/Steps
+## Goals/Steps
 
 - [x] Runner
-- [ ] Entity Component System Base
 - [ ] SDL2 + Vulkan integration
-- [ ] Vulkan Window
+    - [x] Validation layers
+    - [x] Vulkan window
+    - [x] Vulkan instance creation
+    - [ ] Physical device selector
+    - [ ] Swapchain creation
+- [ ] Entity Component System Base
 
 These steps are my primary focus for now, more will be added in the future.
