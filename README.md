@@ -10,6 +10,16 @@ The runner is used as a pipeline to build, test and/or run the raytracer.
 The raytracer is the main application.
 
 
+## Quickstart
+
+Run the quickstart.sh script like the following:
+```
+sh quickstart.sh <mode>
+```
+
+`<mode>` can be one of the following: debug, release
+
+
 ## Code Style
 
 I want to abstract away as many details as possible, including the Vulkan interface,
