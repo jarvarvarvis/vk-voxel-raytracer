@@ -26,3 +26,13 @@ void check::BasicResult::fail(std::string message)
     result.expect(message);
 }
 
+std::ostream& check::operator<<(std::ostream& os, check::BasicResult& result)
+{
+    if (result == check::BasicResult::Ok) {
+        os << "BasicResult::Ok";
+    } else {
+        os << "BasicResult::Err";
+    }
+    return os;
+}
+

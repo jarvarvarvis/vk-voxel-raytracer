@@ -134,11 +134,10 @@ check::BasicResult window::Window::init_vulkan(VkInstance instance, VkSurfaceKHR
 
     // Create the instance
     check::BasicResult result = check::vk_check(vkCreateInstance, &create_info, nullptr, &instance);
-
-    std::cout << "Instance created successfully" << std::endl;
+    std::cout << "Instance create result = " << result << std::endl;
 
     if (!result) return result;
-
+    
     // Create the window surface
     SDL_bool res = SDL_Vulkan_CreateSurface(this->sdl_window, instance, surface);
     if (!res) {

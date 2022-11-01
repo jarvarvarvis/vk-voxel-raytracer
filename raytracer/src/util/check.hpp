@@ -28,6 +28,14 @@ namespace check
             return this->value == Ok;
         }
 
+        constexpr BasicResult operator!() const
+        {
+            if (this->value == Ok)
+                return Err;
+            else
+                return Ok;
+        }
+
         // Specific error interface
         template <typename ErrorInterface>
         void expect(std::string message);
@@ -45,6 +53,8 @@ namespace check
     private:
         Value value;
     };
+    
+    std::ostream& operator<<(std::ostream& os, BasicResult& result);
 
     template <typename F, typename... Args>
     BasicResult vk_check(F function, Args... args)
