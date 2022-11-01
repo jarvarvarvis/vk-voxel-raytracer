@@ -1,6 +1,9 @@
+#include <iostream>
+
 #include "window.hpp"
 
-#include <iostream>
+#include "../vulkan/debug/messenger.hpp"
+
 
 window::Window::Window(uint32_t width, uint32_t height)
 {
@@ -33,14 +36,51 @@ VkApplicationInfo window::Window::create_application_info()
     return app_info;
 }
 
+#ifdef DEBUGGING
+check::BasicResult add_layer_name_if_supported(
+        std::string layer, 
+        std::vector<const char *>& layer_names, 
+        std::vector<VkLayerProperties>& available_layers)
+{
+    bool supported = false;
+    for (auto& available_layer : available_layers) {
+        if (available_layer.layerName == layer) {
+            supported = true;
+            break;
+        }
+    }
+
+    if (supported) {
+        layer_names.push_back(layer.c_str());
+        return check::BasicResult::Ok;
+    } else {
+        return check::BasicResult::Err;
+    }
+}
+#endif
+
 VkInstanceCreateInfo window::Window::create_instance_create_info(VkApplicationInfo *app_info)
 {
+    // Get layers
+    uint32_t available_layers_count;
+    vkEnumerateInstanceLayerProperties(&available_layers_count, nullptr);
+
+    std::vector<VkLayerProperties> available_layers(available_layers_count);
+    vkEnumerateInstanceLayerProperties(&available_layers_count, available_layers.data());
+
+    std::cout << "Available Vulkan layers (" << available_layers_count << " in total):" << "\n";
+    for (auto& available_layer : available_layers) {
+        std::cout << available_layer.layerName << "\n";
+    }
+    std::cout << std::endl;
+
     // Initialize layers
     std::vector<const char *> layer_names {};
 
     // Add Khronos validation layer if running in debug mode
 #ifdef DEBUGGING
-    layer_names.push_back("VK_LAYER_KHRONOS_validation");
+    add_layer_name_if_supported("VK_LAYER_KHRONOS_validation", layer_names, available_layers)
+        .expect("VK_LAYER_KHRONOS_validation is not supported");
 #endif
 
     // Get extensions
@@ -51,24 +91,37 @@ VkInstanceCreateInfo window::Window::create_instance_create_info(VkApplicationIn
     std::vector<const char *> extension_names(extensions_count);
     SDL_Vulkan_GetInstanceExtensions(this->sdl_window, &extensions_count, extension_names.data());
 
+    // Add debug utils extension if running in debug mode
 #ifdef DEBUGGING
-    std::cout << "Got Vulkan extensions:" << "\n";
-    for (auto& extension : extension_names)
-    {
+    extension_names.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
+
+    // Output extensions
+    std::cout << "Using Vulkan extensions:" << "\n";
+    for (auto& extension : extension_names) {
         std::cout << extension << "\n";
     }
     std::cout << std::endl;
-#endif
-
 
     // Create instance
-    VkInstanceCreateInfo create_info {};
+    VkInstanceCreateInfo create_info;
     create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+    create_info.flags = 0;
     create_info.pApplicationInfo = app_info;
     create_info.enabledLayerCount = layer_names.size();
     create_info.ppEnabledLayerNames = layer_names.data();
     create_info.enabledExtensionCount = extension_names.size();
     create_info.ppEnabledExtensionNames = extension_names.data();
+
+    // Setup instance creation and destruction-level debug messenger in debug mode
+#ifdef DEBUGGING 
+    VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
+    debug::make_messenger_create_info(&debug_create_info);
+
+    create_info.pNext = &debug_create_info;
+#else
+    create_info.pNext = nullptr;
+#endif
 
     return create_info;
 }
@@ -81,12 +134,14 @@ check::BasicResult window::Window::init_vulkan(VkInstance instance, VkSurfaceKHR
 
     // Create the instance
     check::BasicResult result = check::vk_check(vkCreateInstance, &create_info, nullptr, &instance);
-    if (result) return result;
+
+    std::cout << "Instance created successfully" << std::endl;
+
+    if (!result) return result;
 
     // Create the window surface
     SDL_bool res = SDL_Vulkan_CreateSurface(this->sdl_window, instance, surface);
-    if (!res)
-    {
+    if (!res) {
         return check::BasicResult::Err;
     }
 

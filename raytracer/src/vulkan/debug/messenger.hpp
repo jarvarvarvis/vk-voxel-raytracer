@@ -13,6 +13,9 @@ namespace debug
             const VkDebugUtilsMessengerCallbackDataEXT *callback_data,
             void *user_data
     );
+    
+    void make_messenger_create_info(VkDebugUtilsMessengerCreateInfoEXT *create_info,
+                                           void *user_data = nullptr);
 
     class DebugMessenger
     {
@@ -28,3 +31,4 @@ namespace debug
                                    const VkAllocationCallbacks *allocator = nullptr);
     };
 }
+

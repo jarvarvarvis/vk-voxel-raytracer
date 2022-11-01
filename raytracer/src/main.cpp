@@ -15,7 +15,7 @@ int main()
     VkInstance instance;
     VkSurfaceKHR surface;
     raytracer_window
-        .init_vulkan(&instance, &surface)
+        .init_vulkan(instance, &surface)
         .expect("Failed to initialize raytracer instance");
 
 #ifdef DEBUGGING
@@ -48,8 +48,8 @@ int main()
 #endif
 
     // Clean up Vulkan instance and surface
-    vkDestroySurfaceKHR(instance, surface, NULL);
-    vkDestroyInstance(instance, NULL);
+    vkDestroySurfaceKHR(instance, surface, nullptr);
+    vkDestroyInstance(instance, nullptr);
 
     return 0;
 }

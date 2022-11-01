@@ -4,8 +4,8 @@
 #include <SDL2/SDL_vulkan.h>
 #include <vulkan/vulkan.hpp>
 
-#include "../util/check.hpp"
 #include "../definitions.hpp"
+#include "../util/check.hpp"
 
 namespace window
 {

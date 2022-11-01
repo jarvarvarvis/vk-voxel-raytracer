@@ -14,7 +14,8 @@ VkBool32 debug::debug_callback(
     return VK_FALSE;
 }
 
-void init_create_info(VkDebugUtilsMessengerCreateInfoEXT *create_info, void *user_data)
+void debug::make_messenger_create_info(VkDebugUtilsMessengerCreateInfoEXT *create_info,
+                                       void *user_data)
 {
 	create_info->sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
 	create_info->flags = 0;
@@ -33,7 +34,7 @@ void init_create_info(VkDebugUtilsMessengerCreateInfoEXT *create_info, void *use
 
 debug::DebugMessenger::DebugMessenger(void *user_data)
 {
-    init_create_info(&this->create_info, user_data);
+    debug::make_messenger_create_info(&this->create_info, user_data);
 }
 
 check::BasicResult debug::DebugMessenger::init(VkInstance instance,
