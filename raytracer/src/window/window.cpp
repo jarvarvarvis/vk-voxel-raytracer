@@ -24,7 +24,7 @@ window::Window::~Window()
 VkApplicationInfo window::Window::create_application_info()
 {
     // Create app info
-    VkApplicationInfo app_info;
+    VkApplicationInfo app_info = {};
     app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     app_info.pNext = nullptr;
     app_info.pApplicationName = APPLICATION_NAME;
@@ -38,20 +38,20 @@ VkApplicationInfo window::Window::create_application_info()
 
 #ifdef DEBUGGING
 check::BasicResult add_layer_name_if_supported(
-        std::string layer, 
+        const char *layer, 
         std::vector<const char *>& layer_names, 
         std::vector<VkLayerProperties>& available_layers)
 {
     bool supported = false;
     for (auto& available_layer : available_layers) {
-        if (available_layer.layerName == layer) {
+        if (std::strcmp(available_layer.layerName, layer) == 0) {
             supported = true;
             break;
         }
     }
 
     if (supported) {
-        layer_names.push_back(layer.c_str());
+        layer_names.push_back(layer);
         return check::BasicResult::Ok;
     } else {
         return check::BasicResult::Err;
@@ -61,7 +61,12 @@ check::BasicResult add_layer_name_if_supported(
 
 VkInstanceCreateInfo window::Window::create_instance_create_info(VkApplicationInfo *app_info)
 {
-    // Get layers
+    // Initialize layers
+    std::vector<const char *> layer_names;
+
+    // Add Khronos validation layer if running in debug mode
+#ifdef DEBUGGING
+    // Get available layers
     uint32_t available_layers_count;
     vkEnumerateInstanceLayerProperties(&available_layers_count, nullptr);
 
@@ -74,11 +79,7 @@ VkInstanceCreateInfo window::Window::create_instance_create_info(VkApplicationIn
     }
     std::cout << std::endl;
 
-    // Initialize layers
-    std::vector<const char *> layer_names {};
-
-    // Add Khronos validation layer if running in debug mode
-#ifdef DEBUGGING
+    // Add VK_LAYER_KHRONOS_validation layer if supported
     add_layer_name_if_supported("VK_LAYER_KHRONOS_validation", layer_names, available_layers)
         .expect("VK_LAYER_KHRONOS_validation is not supported");
 #endif
@@ -104,10 +105,11 @@ VkInstanceCreateInfo window::Window::create_instance_create_info(VkApplicationIn
     std::cout << std::endl;
 
     // Create instance
-    VkInstanceCreateInfo create_info;
+    VkInstanceCreateInfo create_info = {};
     create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     create_info.flags = 0;
     create_info.pApplicationInfo = app_info;
+
     create_info.enabledLayerCount = layer_names.size();
     create_info.ppEnabledLayerNames = layer_names.data();
     create_info.enabledExtensionCount = extension_names.size();
@@ -133,14 +135,18 @@ check::BasicResult window::Window::init_vulkan(VkInstance instance, VkSurfaceKHR
     VkInstanceCreateInfo create_info = this->create_instance_create_info(&app_info);
 
     // Create the instance
-    check::BasicResult result = check::vk_check(vkCreateInstance, &create_info, nullptr, &instance);
-    std::cout << "Instance create result = " << result << std::endl;
+    check::BasicResult instance_create_result = 
+        check::vk_check(vkCreateInstance, &create_info, nullptr, &instance);
+    std::cout << "Instance create result = " << instance_create_result << std::endl;
 
-    if (!result) return result;
+    if (!instance_create_result) return instance_create_result;
     
     // Create the window surface
-    SDL_bool res = SDL_Vulkan_CreateSurface(this->sdl_window, instance, surface);
-    if (!res) {
+    SDL_bool surface_create_result = SDL_Vulkan_CreateSurface(this->sdl_window, instance, surface);
+
+    std::cout << "Surface create result = " << surface_create_result << std::endl;
+
+    if (!surface_create_result) {
         return check::BasicResult::Err;
     }
 

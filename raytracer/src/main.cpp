@@ -21,7 +21,8 @@ int main()
 #ifdef DEBUGGING
     // Setup debug messenger
     debug::DebugMessenger messenger;
-    messenger.init(instance);
+    messenger.init(instance)
+        .expect("Failed to initialize debug messenger");
 #endif
     
     // Select the best physical device to use
@@ -44,7 +45,8 @@ int main()
 
 #ifdef DEBUGGING
     // Destroy debug messenger
-    messenger.destroy(instance);
+    messenger.destroy(instance)
+        .expect("Failed to destroy debug messenger");
 #endif
 
     // Clean up Vulkan instance and surface
