@@ -35,6 +35,11 @@ namespace check
         // Default error interface
         void expect(std::string message);
 
+        // Specific error interface
+        template <typename ErrorInterface>
+        static void fail(std::string message);
+
+        // Default error interface
         static void fail(std::string message);
 
     private:
