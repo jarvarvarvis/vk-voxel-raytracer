@@ -2,6 +2,8 @@
 
 #include <vulkan/vulkan.hpp>
 
+#include "../../../util/check.hpp"
+
 #define FLAG(offset) (1 << offset)
 
 namespace vulkan::device::physical
@@ -24,7 +26,7 @@ namespace vulkan::device::physical
     private:
         DeviceSelectorSpecifiers specifiers;
 
-        DeviceSelector();
+        constexpr DeviceSelector() : specifiers(DeviceSelectorSpecifiers::None) {};
 
     public:
         static DeviceSelector build();
@@ -35,6 +37,6 @@ namespace vulkan::device::physical
         bool has_by_type();
         bool has_by_queue_family_support();
 
-        VkResult select(VkPhysicalDevice *device);
+        check::BasicResult select(VkPhysicalDevice *device);
     };
 }

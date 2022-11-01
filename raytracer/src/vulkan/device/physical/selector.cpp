@@ -41,10 +41,6 @@ inline physical::DeviceSelectorSpecifiers& physical::operator&=(
 }
 
 
-physical::DeviceSelector::DeviceSelector()
-    : specifiers(DeviceSelectorSpecifiers::None)
-{}
-
 physical::DeviceSelector physical::DeviceSelector::build()
 {
     return physical::DeviceSelector();
@@ -72,7 +68,9 @@ bool physical::DeviceSelector::has_by_queue_family_support()
     return static_cast<long>(this->specifiers & DeviceSelectorSpecifiers::ByQueueFamilySupport) == 1;
 }
 
-VkResult physical::DeviceSelector::select(VkPhysicalDevice *device)
+check::BasicResult physical::DeviceSelector::select(VkPhysicalDevice *device)
 {
-    return VK_SUCCESS;
+    uint32_t device_count = 0;
+
+    return check::BasicResult::Ok;
 }
