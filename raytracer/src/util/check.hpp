@@ -15,11 +15,18 @@ namespace check
             Err
         };
 
-        BasicResult() = default;
-        BasicResult(Value value);
+        BasicResult() = delete;
+        constexpr BasicResult(Value value) : value(value) {}
 
-        constexpr operator Value() const;
-        explicit operator bool() const;
+        constexpr operator Value() const
+        {
+            return this->value;
+        }
+
+        constexpr operator bool() const
+        {
+            return this->value == Ok;
+        }
 
         // Specific error interface
         template <typename ErrorInterface>

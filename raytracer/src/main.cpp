@@ -23,9 +23,8 @@ int main()
             .by_type()
             .by_queue_family_support();
 
-    if (selector.select(&physical_device) != VK_SUCCESS) {
-        throw std::runtime_error("Failed to select suitable physical device");
-    }
+    selector.select(&physical_device)
+        .expect("Failed to select suitable physical device");
 
     // Clean up Vulkan instance and surface
     vkDestroySurfaceKHR(instance, surface, NULL);
