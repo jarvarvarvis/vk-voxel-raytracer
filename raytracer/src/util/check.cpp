@@ -3,7 +3,9 @@
 template <typename ErrorInterface> 
 void check::BasicResult::expect(std::string message)
 {
-    ErrorInterface::error(message);
+    if (this->value == BasicResult::Err) {
+        ErrorInterface::error(message);
+    }
 }
 
 void check::BasicResult::expect(std::string message)
