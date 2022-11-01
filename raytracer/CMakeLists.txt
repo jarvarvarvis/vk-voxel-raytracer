@@ -15,6 +15,7 @@ include_directories(${Vulkan_INCLUDE_DIRS})
 # other debugging options)
 if (DEBUGGING)
     add_definitions(-DDEBUGGING)
+    set(CMAKE_BUILD_TYPE Debug)
 endif ()
 
 
