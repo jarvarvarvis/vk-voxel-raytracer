@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "util/check.hpp"
 #include "window/window.hpp"
 #include "vulkan/device/physical/selector.hpp"
 
@@ -11,9 +12,8 @@ int main()
     // Set up Vulkan
     VkInstance instance;
     VkSurfaceKHR surface;
-    if (raytracer_window.init_vulkan(instance, &surface) != VK_SUCCESS) {
-        throw std::runtime_error("Failed to initialise Vulkan instance and/or surface");
-    }
+    raytracer_window.init_vulkan(instance, &surface)
+        .expect("Failed to initialize raytracer instance");
     
     // Select the best physical device to use
     VkPhysicalDevice physical_device;

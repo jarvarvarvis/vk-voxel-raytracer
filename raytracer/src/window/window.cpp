@@ -73,20 +73,23 @@ VkInstanceCreateInfo window::Window::create_instance_create_info(VkApplicationIn
     return create_info;
 }
 
-VkResult window::Window::init_vulkan(VkInstance instance, VkSurfaceKHR *surface)
+check::BasicResult window::Window::init_vulkan(VkInstance instance, VkSurfaceKHR *surface)
 {
     // Create app info and instance create info
     VkApplicationInfo app_info = this->create_application_info();
     VkInstanceCreateInfo create_info = this->create_instance_create_info(&app_info);
 
     // Create the instance
-    VkResult create_instance_result = vkCreateInstance(&create_info, nullptr, &instance);
-    if (create_instance_result != VK_SUCCESS) return create_instance_result;
+    check::BasicResult result = check::vk_check(vkCreateInstance, &create_info, nullptr, &instance);
+    if (result) return result;
 
     // Create the window surface
     SDL_bool res = SDL_Vulkan_CreateSurface(this->sdl_window, instance, surface);
-    if (!res) return VK_ERROR_INITIALIZATION_FAILED;
+    if (!res)
+    {
+        return check::BasicResult::Err;
+    }
 
-    return VK_SUCCESS;
+    return check::BasicResult::Ok;
 }
 

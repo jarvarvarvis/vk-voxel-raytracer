@@ -4,6 +4,7 @@
 #include <SDL2/SDL_vulkan.h>
 #include <vulkan/vulkan.hpp>
 
+#include "../util/check.hpp"
 #include "../definitions.hpp"
 
 namespace window
@@ -19,6 +20,6 @@ namespace window
 
         VkApplicationInfo create_application_info();
         VkInstanceCreateInfo create_instance_create_info(VkApplicationInfo *app_info);
-        VkResult init_vulkan(VkInstance instance, VkSurfaceKHR *surface);
+        check::BasicResult init_vulkan(VkInstance instance, VkSurfaceKHR *surface);
     };
 }

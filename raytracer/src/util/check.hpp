@@ -2,6 +2,8 @@
 
 #include <vulkan/vulkan.hpp>
 
+#include "error_interfaces/throw_on_error.hpp"
+
 namespace check
 {
     class BasicResult
@@ -14,12 +16,19 @@ namespace check
         };
 
         BasicResult() = default;
-        constexpr BasicResult(Value value);
+        BasicResult(Value value);
 
         constexpr operator Value() const;
-        constexpr operator bool() const;
+        explicit operator bool() const;
 
+        // Specific error interface
+        template <typename ErrorInterface>
         void expect(std::string message);
+
+        // Default error interface
+        void expect(std::string message);
+
+        static void fail(std::string message);
 
     private:
         Value value;
