@@ -1,7 +1,9 @@
 #include <iostream>
 
 #include "util/check.hpp"
+
 #include "window/window.hpp"
+#include "vulkan/debug/messenger.hpp"
 #include "vulkan/device/physical/selector.hpp"
 
 int main()
@@ -12,8 +14,15 @@ int main()
     // Set up Vulkan
     VkInstance instance;
     VkSurfaceKHR surface;
-    raytracer_window.init_vulkan(instance, &surface)
+    raytracer_window
+        .init_vulkan(&instance, &surface)
         .expect("Failed to initialize raytracer instance");
+
+#ifdef DEBUGGING
+    // Setup debug messenger
+    debug::DebugMessenger messenger;
+    messenger.init(instance);
+#endif
     
     // Select the best physical device to use
     VkPhysicalDevice physical_device;
@@ -31,6 +40,11 @@ int main()
     VkPhysicalDeviceProperties device_props;
     vkGetPhysicalDeviceProperties(physical_device, &device_props);
     std::cout << "Selected best physical device: " << device_props.deviceName << std::endl;
+#endif
+
+#ifdef DEBUGGING
+    // Destroy debug messenger
+    messenger.destroy(instance);
 #endif
 
     // Clean up Vulkan instance and surface
