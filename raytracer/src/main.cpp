@@ -23,8 +23,15 @@ int main()
             .by_type()
             .by_queue_family_support();
 
-    selector.select(&physical_device)
+    selector.select(instance, &physical_device)
         .expect("Failed to select suitable physical device");
+
+#ifdef DEBUGGING
+    // Get device properties
+    VkPhysicalDeviceProperties device_props;
+    vkGetPhysicalDeviceProperties(physical_device, &device_props);
+    std::cout << "Selected best physical device: " << device_props.deviceName << std::endl;
+#endif
 
     // Clean up Vulkan instance and surface
     vkDestroySurfaceKHR(instance, surface, NULL);

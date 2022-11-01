@@ -1,8 +1,10 @@
 #pragma once
 
+#include <memory>
 #include <vulkan/vulkan.hpp>
 
 #include "../../../util/check.hpp"
+#include "rater.hpp"
 
 #define FLAG(offset) (1 << offset)
 
@@ -37,6 +39,8 @@ namespace vulkan::device::physical
         bool has_by_type();
         bool has_by_queue_family_support();
 
-        check::BasicResult select(VkPhysicalDevice *device);
+        std::vector<std::shared_ptr<rater::Rater>> get_raters();
+
+        check::BasicResult select(VkInstance instance, VkPhysicalDevice *device);
     };
 }
