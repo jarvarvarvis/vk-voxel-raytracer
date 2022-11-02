@@ -22,6 +22,7 @@ namespace debug
     private:
         VkDebugUtilsMessengerCreateInfoEXT create_info;
         VkDebugUtilsMessengerEXT debug_messenger;
+        PFN_vkGetInstanceProcAddr get_instance_proc_addr;
 
     public:
         DebugMessenger(void *user_data = nullptr);

@@ -37,7 +37,7 @@ void vk_instance_info::InstanceInfo::init_layers()
 
     std::cout << "Available Vulkan layers (" << available_layers_count << " in total):" << "\n";
     for (auto& available_layer : available_layers) {
-        std::cout << available_layer.layerName << "\n";
+        std::cout << " - " << available_layer.layerName << "\n";
     }
     std::cout << std::endl;
 
@@ -46,6 +46,13 @@ void vk_instance_info::InstanceInfo::init_layers()
     add_layer_name_if_supported("VK_LAYER_KHRONOS_validation", this->layers, available_layers)
         .expect("VK_LAYER_KHRONOS_validation is not supported");
 #endif
+
+    // Output layers
+    std::cout << "Using Vulkan layers:" << "\n";
+    for (auto& layer : this->layers) {
+        std::cout << " - " << layer << "\n";
+    }
+    std::cout << std::endl;
 }
 
 void vk_instance_info::InstanceInfo::init_extensions(SDL_Window *window)
@@ -66,7 +73,7 @@ void vk_instance_info::InstanceInfo::init_extensions(SDL_Window *window)
     // Output extensions
     std::cout << "Using Vulkan extensions:" << "\n";
     for (auto& extension : this->extensions) {
-        std::cout << extension << "\n";
+        std::cout << " - " << extension << "\n";
     }
     std::cout << std::endl;
 }

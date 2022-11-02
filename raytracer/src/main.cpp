@@ -23,11 +23,11 @@ int main()
 #ifdef DEBUGGING
     // Setup debug messenger
     debug::DebugMessenger messenger;
+    std::cout << "Created debug messenger" << std::endl;
     messenger.init(instance)
         .expect("Failed to initialize debug messenger");
+    std::cout << "Initialized debug messenger" << std::endl;
 #endif
-  
-    std::cout << "Created debug messenger" << std::endl;
 
     // Select the best physical device to use
     VkPhysicalDevice physical_device;

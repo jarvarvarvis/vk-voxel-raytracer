@@ -1,5 +1,6 @@
 #include <iostream>
-#include <vulkan/vulkan_core.h>
+
+#include <SDL2/SDL_vulkan.h>
 
 #include "messenger.hpp"
 
@@ -34,23 +35,36 @@ void debug::make_messenger_create_info(VkDebugUtilsMessengerCreateInfoEXT *creat
 
 debug::DebugMessenger::DebugMessenger(void *user_data)
 {
+    this->create_info = {};
+    this->debug_messenger = {};
     debug::make_messenger_create_info(&this->create_info, user_data);
+
+    // Get the function pointer to vkGetInstanceProcAddr
+    this->get_instance_proc_addr = (PFN_vkGetInstanceProcAddr) SDL_Vulkan_GetVkGetInstanceProcAddr();
 }
 
 check::BasicResult debug::DebugMessenger::init(VkInstance instance,
                                                const VkAllocationCallbacks *allocator)
 {
+    std::cout << "Trying to acquire vkCreateDebugUtilsMessengerEXT" << std::endl;
+
     // Get the vkCreateDebugUtilsMessengerEXT function pointer
     PFN_vkCreateDebugUtilsMessengerEXT create_debug_utils_messenger =
         (PFN_vkCreateDebugUtilsMessengerEXT)
-            vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
+            this->get_instance_proc_addr(instance, "vkCreateDebugUtilsMessengerEXT");
+
+    std::cout << "Acquired vkCreateDebugUtilsMessengerEXT? " << create_debug_utils_messenger << std::endl;
 
     if (create_debug_utils_messenger != nullptr) {
         // Create debug utils messenger
-        create_debug_utils_messenger(instance, 
+        VkResult result = create_debug_utils_messenger(instance, 
                 &this->create_info, 
                 allocator, 
                 &this->debug_messenger);
+        
+        if (result != VK_SUCCESS)
+            return check::BasicResult::Err;
+
         return check::BasicResult::Ok;
     } else {
         return check::BasicResult::Err;
@@ -61,7 +75,10 @@ check::BasicResult debug::DebugMessenger::destroy(VkInstance instance,
                                                   const VkAllocationCallbacks *allocator)
 {
     PFN_vkDestroyDebugUtilsMessengerEXT destroy_debug_utils_messenger =
-        (PFN_vkDestroyDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+        (PFN_vkDestroyDebugUtilsMessengerEXT) 
+            this->get_instance_proc_addr(instance, "vkDestroyDebugUtilsMessengerEXT");
+    
+    std::cout << "Acquired vkDestroyDebugUtilsMessengerEXT? " << destroy_debug_utils_messenger << std::endl;
 
     if (destroy_debug_utils_messenger != nullptr) {
         // Destroy debug utils messenger
