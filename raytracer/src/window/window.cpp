@@ -1,5 +1,7 @@
 #include <iostream>
+#include <vulkan/vulkan_core.h>
 
+#include "vk_instance_info.hpp"
 #include "window.hpp"
 
 #include "../vulkan/debug/messenger.hpp"
@@ -13,6 +15,12 @@ window::Window::Window(uint32_t width, uint32_t height)
         width, height,
         SDL_WINDOW_VULKAN
     );
+
+    this->vk_instance_info = std::make_unique<vk_instance_info::InstanceInfo>(
+            APPLICATION_NAME, 
+            VK_MAKE_VERSION(1, 0, 0),
+            this->sdl_window
+    );
 }
 
 window::Window::~Window()
@@ -21,130 +29,17 @@ window::Window::~Window()
     SDL_DestroyWindow(this->sdl_window);
 }
 
-VkApplicationInfo window::Window::create_application_info()
-{
-    // Create app info
-    VkApplicationInfo app_info = {};
-    app_info.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    app_info.pNext = nullptr;
-    app_info.pApplicationName = APPLICATION_NAME;
-    app_info.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    app_info.pEngineName = APPLICATION_NAME " Engine";
-    app_info.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    app_info.apiVersion = VK_API_VERSION_1_0;
-
-    return app_info;
-}
-
-#ifdef DEBUGGING
-check::BasicResult add_layer_name_if_supported(
-        const char *layer, 
-        std::vector<const char *>& layer_names, 
-        std::vector<VkLayerProperties>& available_layers)
-{
-    bool supported = false;
-    for (auto& available_layer : available_layers) {
-        if (std::strcmp(available_layer.layerName, layer) == 0) {
-            supported = true;
-            break;
-        }
-    }
-
-    if (supported) {
-        layer_names.push_back(layer);
-        return check::BasicResult::Ok;
-    } else {
-        return check::BasicResult::Err;
-    }
-}
-#endif
-
-VkInstanceCreateInfo window::Window::create_instance_create_info(VkApplicationInfo *app_info)
-{
-    // Initialize layers
-    std::vector<const char *> layer_names;
-
-    // Add Khronos validation layer if running in debug mode
-#ifdef DEBUGGING
-    // Get available layers
-    uint32_t available_layers_count;
-    vkEnumerateInstanceLayerProperties(&available_layers_count, nullptr);
-
-    std::vector<VkLayerProperties> available_layers(available_layers_count);
-    vkEnumerateInstanceLayerProperties(&available_layers_count, available_layers.data());
-
-    std::cout << "Available Vulkan layers (" << available_layers_count << " in total):" << "\n";
-    for (auto& available_layer : available_layers) {
-        std::cout << available_layer.layerName << "\n";
-    }
-    std::cout << std::endl;
-
-    // Add VK_LAYER_KHRONOS_validation layer if supported
-    add_layer_name_if_supported("VK_LAYER_KHRONOS_validation", layer_names, available_layers)
-        .expect("VK_LAYER_KHRONOS_validation is not supported");
-#endif
-
-    // Get extensions
-    uint32_t extensions_count;
-    SDL_Vulkan_GetInstanceExtensions(this->sdl_window, &extensions_count, nullptr);
-
-    // Get extensions
-    std::vector<const char *> extension_names(extensions_count);
-    SDL_Vulkan_GetInstanceExtensions(this->sdl_window, &extensions_count, extension_names.data());
-
-    // Add debug utils extension if running in debug mode
-#ifdef DEBUGGING
-    extension_names.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-#endif
-
-    // Output extensions
-    std::cout << "Using Vulkan extensions:" << "\n";
-    for (auto& extension : extension_names) {
-        std::cout << extension << "\n";
-    }
-    std::cout << std::endl;
-
-    // Create instance
-    VkInstanceCreateInfo create_info = {};
-    create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    create_info.flags = 0;
-    create_info.pApplicationInfo = app_info;
-
-    create_info.enabledLayerCount = layer_names.size();
-    create_info.ppEnabledLayerNames = layer_names.data();
-    create_info.enabledExtensionCount = extension_names.size();
-    create_info.ppEnabledExtensionNames = extension_names.data();
-
-    // Setup instance creation and destruction-level debug messenger in debug mode
-#ifdef DEBUGGING 
-    VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
-    debug::make_messenger_create_info(&debug_create_info);
-
-    create_info.pNext = &debug_create_info;
-#else
-    create_info.pNext = nullptr;
-#endif
-
-    return create_info;
-}
-
 check::BasicResult window::Window::init_vulkan(VkInstance instance, VkSurfaceKHR *surface)
 {
-    // Create app info and instance create info
-    VkApplicationInfo app_info = this->create_application_info();
-    VkInstanceCreateInfo create_info = this->create_instance_create_info(&app_info);
-
     // Create the instance
+    VkInstanceCreateInfo *create_info = this->vk_instance_info->create_info_ptr();
     check::BasicResult instance_create_result = 
-        check::vk_check(vkCreateInstance, &create_info, nullptr, &instance);
-    std::cout << "Instance create result = " << instance_create_result << std::endl;
+        check::vk_check(vkCreateInstance, create_info, nullptr, &instance);
 
     if (!instance_create_result) return instance_create_result;
     
     // Create the window surface
     SDL_bool surface_create_result = SDL_Vulkan_CreateSurface(this->sdl_window, instance, surface);
-
-    std::cout << "Surface create result = " << surface_create_result << std::endl;
 
     if (!surface_create_result) {
         return check::BasicResult::Err;

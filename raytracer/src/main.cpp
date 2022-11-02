@@ -17,6 +17,8 @@ int main()
     raytracer_window
         .init_vulkan(instance, &surface)
         .expect("Failed to initialize raytracer instance");
+    
+    std::cout << "Created instance" << std::endl;
 
 #ifdef DEBUGGING
     // Setup debug messenger
@@ -24,7 +26,9 @@ int main()
     messenger.init(instance)
         .expect("Failed to initialize debug messenger");
 #endif
-    
+  
+    std::cout << "Created debug messenger" << std::endl;
+
     // Select the best physical device to use
     VkPhysicalDevice physical_device;
    
