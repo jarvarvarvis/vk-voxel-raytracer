@@ -3,11 +3,14 @@
 #include "util/check.hpp"
 
 #include "window/window.hpp"
-#include "vulkan/debug/messenger.hpp"
-#include "vulkan/device/physical/selector.hpp"
 
 int main()
 {
+    // Initialize SDL Video + Events instance
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) < 0) {
+        check::BasicResult::fail("Failed to initialize SDL");
+    }
+
     // Create the window
     window::Window raytracer_window(800, 600);
 
@@ -17,41 +20,6 @@ int main()
     raytracer_window
         .init_vulkan(instance, &surface)
         .expect("Failed to initialize raytracer instance");
-    
-    std::cout << "Created instance" << std::endl;
-
-#ifdef DEBUGGING
-    // Setup debug messenger
-    debug::DebugMessenger messenger;
-    std::cout << "Created debug messenger" << std::endl;
-    messenger.init(instance)
-        .expect("Failed to initialize debug messenger");
-    std::cout << "Initialized debug messenger" << std::endl;
-#endif
-
-    // Select the best physical device to use
-    VkPhysicalDevice physical_device;
-   
-    vulkan::device::physical::DeviceSelector selector = 
-        vulkan::device::physical::DeviceSelector::build()
-            .by_type()
-            .by_queue_family_support();
-
-    selector.select(instance, &physical_device)
-        .expect("Failed to select suitable physical device");
-
-#ifdef DEBUGGING
-    // Get device properties
-    VkPhysicalDeviceProperties device_props;
-    vkGetPhysicalDeviceProperties(physical_device, &device_props);
-    std::cout << "Selected best physical device: " << device_props.deviceName << std::endl;
-#endif
-
-#ifdef DEBUGGING
-    // Destroy debug messenger
-    messenger.destroy(instance)
-        .expect("Failed to destroy debug messenger");
-#endif
 
     // Clean up Vulkan instance and surface
     vkDestroySurfaceKHR(instance, surface, nullptr);

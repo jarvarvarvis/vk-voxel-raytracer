@@ -8,15 +8,12 @@
 #include "../definitions.hpp"
 #include "../util/check.hpp"
 
-#include "vk_instance_info.hpp"
-
 namespace window
 {
     class Window
     {
     private:
         SDL_Window *sdl_window;
-        std::unique_ptr<vk_instance_info::InstanceInfo> vk_instance_info;
 
     public:
         Window(uint32_t width, uint32_t height);
