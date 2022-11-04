@@ -35,7 +35,7 @@ This is possible using an Entity Component System.
     - [x] Validation layers
     - [x] Vulkan window
     - [x] Vulkan instance creation
-    - [ ] Physical device selector
+    - [x] Physical device selector
     - [ ] Swapchain creation
 - [ ] Entity Component System Base
 
