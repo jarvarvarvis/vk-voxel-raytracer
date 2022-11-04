@@ -31,11 +31,22 @@ add_executable(${PROJECT_NAME}
     ${HEADER_FILES}
     ${SOURCE_FILES})
 
+# Fetch git libraries
+include(FetchContent)
+
+# vk-bootstrap
+FetchContent_Declare(
+    fetch_vk_bootstrap
+    GIT_REPOSITORY https://github.com/charles-lunarg/vk-bootstrap
+    GIT_TAG        v0.11
+)
+FetchContent_MakeAvailable(fetch_vk_bootstrap)
 
 # Link libraries
 set(LIBS
     Vulkan::Vulkan
-    SDL2::SDL2)
+    SDL2::SDL2
+    vk-bootstrap::vk-bootstrap)
 
 message("Got libraries:\n" ${LIBS})
 
@@ -45,3 +56,4 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBS})
 target_compile_definitions(${PROJECT_NAME}
     PRIVATE
     APPLICATION_NAME="${PROJECT_NAME}")
+
