@@ -5,7 +5,7 @@
 #include <SDL2/SDL_vulkan.h>
 #include <vulkan/vulkan.hpp>
 
-#include "VkBootstrap.h"
+#include <VkBootstrap.h>
 
 #include "../definitions.hpp"
 #include "../util/check.hpp"
