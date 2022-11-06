@@ -45,3 +45,13 @@ check::BasicResult context::Context::create_device_and_queue()
     return check::BasicResult::Ok;
 }
 
+VkDevice context::Context::get_device()
+{
+    return this->device;
+}
+
+VkQueue context::Context::get_graphics_queue()
+{
+    return this->graphics_queue;
+}
+

@@ -22,6 +22,9 @@ namespace context
         ~Context();
 
         check::BasicResult create_device_and_queue();
+
+        VkDevice get_device();
+        VkQueue get_graphics_queue();
     };
 }
 
