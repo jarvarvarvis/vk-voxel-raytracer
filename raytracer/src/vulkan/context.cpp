@@ -6,12 +6,12 @@ context::Context::Context(vkb::Instance instance, VkSurfaceKHR surface) :
 
 context::Context::~Context()
 {
+    vkDestroyDevice(this->device, nullptr);
     vkDestroySurfaceKHR(this->vk_instance.instance, this->window_surface, nullptr);
-    vkb::destroy_device(this->device);
     vkb::destroy_instance(this->vk_instance);
 }
 
-check::BasicResult context::Context::select_physical_device()
+check::BasicResult context::Context::create_device_and_queue()
 {
     // Select physical devices
     vkb::PhysicalDeviceSelector selector(this->vk_instance);
@@ -23,20 +23,25 @@ check::BasicResult context::Context::select_physical_device()
         return check::BasicResult::Err;
     }
 
-    this->physical_device = phys_device_ret.value();
-    return check::BasicResult::Ok;
-}
+    vkb::PhysicalDevice physical_device = phys_device_ret.value();
 
-check::BasicResult context::Context::create_logical_device()
-{
     // Build logical device
-    vkb::DeviceBuilder device_builder { this->physical_device };
+    vkb::DeviceBuilder device_builder { physical_device };
 	auto device_ret = device_builder.build();
 	if (!device_ret) {
         return check::BasicResult::Err;
 	}
 
-    this->device = device_ret.value();
+    vkb::Device vkb_device = device_ret.value();
+    this->device = vkb_device.device;
+
+    // Get the graphics queue
+    auto graphics_queue_ret = vkb_device.get_queue(vkb::QueueType::graphics);
+    if (!graphics_queue_ret) {
+        return check::BasicResult::Err;
+    }
+
+    this->graphics_queue = graphics_queue_ret.value();
     return check::BasicResult::Ok;
 }
 

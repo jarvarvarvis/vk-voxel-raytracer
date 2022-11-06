@@ -14,15 +14,14 @@ namespace context
         vkb::Instance vk_instance;
         VkSurfaceKHR window_surface;
 
-        vkb::PhysicalDevice physical_device;
-        vkb::Device device;
+        VkDevice device;
+        VkQueue graphics_queue;
 
     public:
         Context(vkb::Instance instance, VkSurfaceKHR surface);
         ~Context();
 
-        check::BasicResult select_physical_device();
-        check::BasicResult create_logical_device();
+        check::BasicResult create_device_and_queue();
     };
 }
 

@@ -25,10 +25,8 @@ int main()
 
     // Create the Vulkan context
     context::Context context(instance, surface);
-    context.select_physical_device()
-        .expect("Failed to select physical device");
-    context.create_logical_device()
-        .expect("Failed to create logical device");
+    context.create_device_and_queue()
+        .expect("Failed to create Vulkan device and queue");
 
     return 0;
 }
